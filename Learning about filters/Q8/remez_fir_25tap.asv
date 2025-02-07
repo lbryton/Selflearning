@@ -1,0 +1,53 @@
+% Clearing data
+clc;
+close all;
+clf reset;
+clear;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Set up
+% Constants:
+f_s = 40e3;
+f_snq = f_s/2;
+Rs= 60;     % Stopband ripple (dB)
+% Filter 1
+f_pass = 7.5e3;
+f_stop = 12e3;
+% Filter Order
+% N = (f_s/(f_stop-f_pass)) * attenuation(db) / 22
+N = 25;
+f_norm = [0, f_pass, f_stop, f_snq] / f_snq;
+h1 = firpm(N, f_norm, [1 1 0 0], [1 10]);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Impulse response
+figure(1)
+% Filter 1
+subplot(4,1,1)
+plot(0:100,[h1, zeros(1,101- length(h1),1)],'linewidth',2)
+grid on
+axis([0 50 -0.1 0.5])
+set(gca,'fontsize',14)
+set(gca,'xtick',[0:10:100])
+title('Impulse response, filter 1','fontsize',14)
+xlabel('Time Index','fontsize',14)
+ylabel('Amplitude','fontsize',14)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Log magnitude frequency response
+% Filter 1
+figure(2)
+subplot(4,1,1)
+fft_h1 = 20*log10(abs(fftshift(fft(h1,4096))));
+plot(-40:80/4096:40-80/4096,fft_h1,'linewidth',2)
+grid on
+axis([-40 40 -100 10])
+set(gca,'fontsize',14)
+title('Log magnitude frequency response for filter 1')
+xlabel('Normalized frequency')
+ylabel('Log Magnitude (dB)')
+
+
+
+
